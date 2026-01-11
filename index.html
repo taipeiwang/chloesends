@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐐 G.O.A.T. Metrics | Greatest Of All Terrain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    /* ============================================
+       CSS VARIABLES - Easy to customize!
+       ============================================ */
+    :root {
+      /* Brand Colors */
+      --color-pink: #FF69B4;
+      --color-cyan: #00CED1;
+      --color-green: #00C853;
+      
+      /* Dark Theme (App UI) */
+      --bg-primary: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --bg-card: #252542;
+      --bg-input: #1e1e36;
+      --text-primary: #f0f0f0;
+      --text-secondary: #9090a0;
+      --text-muted: #606070;
+      
+      /* Light Theme (Export) */
+      --export-bg: #FFFFFF;
+      --export-card-bg: #f8f8fa;
+      --export-text: #1a1a2e;
+      --export-text-secondary: #606080;
+      
+      /* UI Properties */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --shadow-glow: 0 0 30px rgba(0, 206, 209, 0.15);
+      --transition: all 0.2s ease;
+    }
+
+    /* ============================================
+       RESET & BASE STYLES
+       ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ============================================
+       LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .app-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .app-title {
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--color-pink) 0%, var(--color-cyan) 50%, var(--color-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .app-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
+
+    /* ============================================
+       CARDS
+       ============================================ */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border-color: var(--color-cyan);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--color-pink), var(--color-cyan));
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-cyan);
+      background: var(--bg-secondary);
+    }
+
+    .btn-block {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ============================================
+       FORM ELEMENTS
+       ============================================ */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .form-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text-primary);
+      background: var(--bg-input);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+
+    .form-select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239090a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 40px;
+    }
+
+    .form-select option {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--color-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 206, 209, 0.15);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .form-row .form-input,
+    .form-row .form-select {
+      flex: 1;
+    }
+
+    .form-row-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    /* Grade System Selector */
+    .grade-system-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--text-muted);
+    }
+
+    .grade-system-row .form-label {
+      margin-bottom: 0;
+      white-space: nowrap;
+    }
+
+    .grade-system-row .form-select {
+      flex: 1;
+      max-width: 200px;
+    }
+
+    /* ============================================
+       PREVIEW SECTION
+       ============================================ */
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-wrapper {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ============================================
+       EXPORT CONTAINER (Light Theme)
+       ============================================ */
+    .export-container {
+      width: 324px;
+      height: 405px;
+      background: var(--export-bg);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .export-header {
+      padding: 20px 16px 12px;
+      text-align: center;
+    }
+
+    .export-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--color-pink), var(--color-cyan), var(--color-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .export-date {
+      font-size: 0.9rem;
+      color: var(--export-text-secondary);
+      font-weight: 400;
+    }
+
+    .export-chart-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+    }
+
+    .export-chart-wrapper canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .export-scores {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px 16px 16px;
+    }
+
+    .score-card {
+      background: var(--export-card-bg);
+      border-radius: var(--radius-sm);
+      padding: 8px 6px;
+      text-align: center;
+    }
+
+    .score-label {
+      font-size: 0.7rem;
+      color: var(--export-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .score-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--export-text);
+    }
+
+    /* ============================================
+       LOADING SPINNER
+       ============================================ */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ============================================
+       TOAST NOTIFICATION
+       ============================================ */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--color-green);
+    }
+
+    .toast.error {
+      border-left: 4px solid #ff4757;
+    }
+
+    /* ============================================
+       FOOTER
+       ============================================ */
+    .app-footer {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .app-footer a {
+      color: var(--color-cyan);
+      text-decoration: none;
+    }
+
+    .app-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ============================================
+       RESPONSIVE ADJUSTMENTS
+       ============================================ */
+    @media (max-width: 400px) {
+      .export-container {
+        width: 280px;
+        height: 350px;
+      }
+
+      .export-title {
+        font-size: 1.1rem;
+      }
+
+      .score-card {
+        padding: 6px 4px;
+      }
+
+      .score-label {
+        font-size: 0.65rem;
+      }
+
+      .score-value {
+        font-size: 0.85rem;
+      }
+
+      .grade-system-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .grade-system-row .form-select {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-title">🐐 G.O.A.T. Metrics 🐐</h1>
+      <p class="app-subtitle">Greatest Of All Terrain — Select your grade system, choose grades for each aspect, then download your snapshot!</p>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="main-grid">
+      <!-- Input Form -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Enter Your Scores</h2>
+          <div class="header-actions">
+            <button class="btn btn-sm btn-ghost" id="demoBtn">Load Demo</button>
+            <button class="btn btn-sm btn-ghost" id="resetBtn">Reset All</button>
+          </div>
+        </div>
+
+        <form id="assessmentForm">
+          <!-- Grade System Selector -->
+          <div class="grade-system-row">
+            <label class="form-label" for="gradeSystem">Grade System</label>
+            <select class="form-select" id="gradeSystem">
+              <option value="vscale">V Scale</option>
+              <option value="font">Font</option>
+              <option value="yds">YDS</option>
+              <option value="french">French</option>
+            </select>
+          </div>
+
+          <!-- Technical Precision -->
+          <div class="form-group">
+            <label class="form-label" for="technical">Technical Precision</label>
+            <select class="form-select" id="technical">
+              <option value="">— Select grade —</option>
+            </select>
+            <p class="form-hint">Max grade on vertical slab/technical terrain</p>
+          </div>
+
+          <!-- Finger Strength -->
+          <div class="form-group">
+            <label class="form-label" for="finger">Finger Strength</label>
+            <select class="form-select" id="finger">
+              <option value="">— Select grade —</option>
+            </select>
+            <p class="form-hint">Max grade on crimp-intensive problems</p>
+          </div>
+
+          <!-- Static Power -->
+          <div class="form-group">
+            <label class="form-label" for="static">Static Power</label>
+            <select class="form-select" id="static">
+              <option value="">— Select grade —</option>
+            </select>
+            <p class="form-hint">Max grade on steep overhangs with static moves</p>
+          </div>
+
+          <!-- Coordination & Dynamic -->
+          <div class="form-group">
+            <label class="form-label" for="dynamic">Coordination & Dynamic</label>
+            <select class="form-select" id="dynamic">
+              <option value="">— Select grade —</option>
+            </select>
+            <p class="form-hint">Max grade on dyno/coordination problems</p>
+          </div>
+
+          <!-- Endurance (Composite) -->
+          <div class="form-group">
+            <label class="form-label">Endurance</label>
+            <div class="form-row">
+              <select class="form-select" id="enduranceGrade">
+                <option value="">— Select grade —</option>
+              </select>
+              <span class="form-row-label">×</span>
+              <input type="number" class="form-input" id="enduranceRoutes" placeholder="5" min="1" max="99" style="max-width: 80px;">
+              <span class="form-row-label">routes</span>
+            </div>
+            <p class="form-hint">Grade used + consecutive routes climbed</p>
+          </div>
+
+          <!-- Mental & Redpoint (Composite) -->
+          <div class="form-group">
+            <label class="form-label">Mental & Redpoint</label>
+            <div class="form-row">
+              <select class="form-select" id="mentalGrade">
+                <option value="">— Select grade —</option>
+              </select>
+              <span class="form-row-label">in</span>
+              <input type="number" class="form-input" id="mentalAttempts" placeholder="12" min="1" max="999" style="max-width: 80px;">
+              <span class="form-row-label">tries</span>
+            </div>
+            <p class="form-hint">Hardest send + attempt count for context</p>
+          </div>
+        </form>
+      </div>
+
+      <!-- Preview & Export -->
+      <div class="preview-section">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Preview</h2>
+          </div>
+          <div class="preview-wrapper">
+            <!-- Export Container (what gets captured) -->
+            <div class="export-container" id="exportContainer">
+              <div class="export-header">
+                <h1 class="export-title">🐐 G.O.A.T. Metrics 🐐</h1>
+                <p class="export-date" id="exportDate"></p>
+              </div>
+              <div class="export-chart-wrapper">
+                <canvas id="radarChart"></canvas>
+              </div>
+              <div class="export-scores" id="scoreCards">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary btn-block" id="downloadBtn">
+            <span>📸</span>
+            <span>Download for Instagram</span>
+          </button>
+          <button class="btn btn-secondary btn-block" id="copyBtn">
+            <span>📋</span>
+            <span>Copy to Clipboard</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>🐐 G.O.A.T. Metrics — Greatest Of All Terrain 🏔️</p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============================================
+    // GRADE SYSTEMS DATA (from PRD)
+    // ============================================
+    const GRADE_SYSTEMS = {
+      vscale: {
+        name: 'V Scale',
+        grades: [
+          { display: 'V0', numeric: 10.00 },
+          { display: 'V0+', numeric: 10.25 },
+          { display: 'V1', numeric: 10.50 },
+          { display: 'V2', numeric: 11.00 },
+          { display: 'V3', numeric: 11.50 },
+          { display: 'V4', numeric: 12.00 },
+          { display: 'V5', numeric: 12.25 },
+          { display: 'V6', numeric: 12.75 },
+          { display: 'V7', numeric: 13.00 },
+          { display: 'V8', numeric: 13.25 },
+          { display: 'V9', numeric: 13.75 },
+          { display: 'V10', numeric: 14.00 },
+          { display: 'V11', numeric: 14.25 },
+          { display: 'V12', numeric: 14.50 },
+          { display: 'V13', numeric: 14.75 },
+          { display: 'V14', numeric: 15.00 },
+          { display: 'V15', numeric: 15.25 },
+          { display: 'V16', numeric: 15.50 },
+          { display: 'V17', numeric: 15.75 }
+        ]
+      },
+      font: {
+        name: 'Font',
+        grades: [
+          { display: '4', numeric: 10.00 },
+          { display: '4+', numeric: 10.25 },
+          { display: '5', numeric: 10.50 },
+          { display: '5+', numeric: 11.00 },
+          { display: '6A', numeric: 11.50 },
+          { display: '6A+', numeric: 11.75 },
+          { display: '6B', numeric: 12.00 },
+          { display: '6C', numeric: 12.25 },
+          { display: '6C+', numeric: 12.50 },
+          { display: '7A', numeric: 12.75 },
+          { display: '7A+', numeric: 13.00 },
+          { display: '7B', numeric: 13.25 },
+          { display: '7B+', numeric: 13.50 },
+          { display: '7C', numeric: 13.75 },
+          { display: '7C+', numeric: 14.00 },
+          { display: '8A', numeric: 14.25 },
+          { display: '8A+', numeric: 14.50 },
+          { display: '8B', numeric: 14.75 },
+          { display: '8B+', numeric: 15.00 },
+          { display: '8C', numeric: 15.25 },
+          { display: '8C+', numeric: 15.50 },
+          { display: '9A', numeric: 15.75 }
+        ]
+      },
+      yds: {
+        name: 'YDS',
+        grades: [
+          { display: '5.10a', numeric: 10.00 },
+          { display: '5.10b', numeric: 10.25 },
+          { display: '5.10c', numeric: 10.50 },
+          { display: '5.10d', numeric: 10.75 },
+          { display: '5.11a', numeric: 11.00 },
+          { display: '5.11b', numeric: 11.25 },
+          { display: '5.11c', numeric: 11.50 },
+          { display: '5.11d', numeric: 11.75 },
+          { display: '5.12a', numeric: 12.00 },
+          { display: '5.12b', numeric: 12.25 },
+          { display: '5.12c', numeric: 12.50 },
+          { display: '5.12d', numeric: 12.75 },
+          { display: '5.13a', numeric: 13.00 },
+          { display: '5.13b', numeric: 13.25 },
+          { display: '5.13c', numeric: 13.50 },
+          { display: '5.13d', numeric: 13.75 },
+          { display: '5.14a', numeric: 14.00 },
+          { display: '5.14b', numeric: 14.25 },
+          { display: '5.14c', numeric: 14.50 },
+          { display: '5.14d', numeric: 14.75 },
+          { display: '5.15a', numeric: 15.00 },
+          { display: '5.15b', numeric: 15.25 },
+          { display: '5.15c', numeric: 15.50 },
+          { display: '5.15d', numeric: 15.75 }
+        ]
+      },
+      french: {
+        name: 'French',
+        grades: [
+          { display: '5c', numeric: 10.00 },
+          { display: '6a', numeric: 10.25 },
+          { display: '6a+', numeric: 10.50 },
+          { display: '6b', numeric: 10.75 },
+          { display: '6b+', numeric: 11.00 },
+          { display: '6c', numeric: 11.25 },
+          { display: '6c+', numeric: 11.50 },
+          { display: '7a', numeric: 11.75 },
+          { display: '7a+', numeric: 12.00 },
+          { display: '7b', numeric: 12.25 },
+          { display: '7b+', numeric: 12.50 },
+          { display: '7c', numeric: 12.75 },
+          { display: '7c+', numeric: 13.00 },
+          { display: '8a', numeric: 13.25 },
+          { display: '8a+', numeric: 13.50 },
+          { display: '8b', numeric: 13.75 },
+          { display: '8b+', numeric: 14.00 },
+          { display: '8c', numeric: 14.25 },
+          { display: '8c+', numeric: 14.50 },
+          { display: '9a', numeric: 14.75 },
+          { display: '9a+', numeric: 15.00 },
+          { display: '9b', numeric: 15.25 },
+          { display: '9b+', numeric: 15.50 },
+          { display: '9c', numeric: 15.75 }
+        ]
+      }
+    };
+
+    // Demo data for each grade system (from PRD Section 11)
+    const DEMO_DATA = {
+      vscale: {
+        technical: 'V5',
+        finger: 'V6',
+        static: 'V5',
+        dynamic: 'V3',
+        enduranceGrade: 'V4',
+        enduranceRoutes: '5',
+        mentalGrade: 'V6',
+        mentalAttempts: '12'
+      },
+      font: {
+        technical: '6C',
+        finger: '7A',
+        static: '6C',
+        dynamic: '6A',
+        enduranceGrade: '6B',
+        enduranceRoutes: '5',
+        mentalGrade: '7A',
+        mentalAttempts: '12'
+      },
+      yds: {
+        technical: '5.12b',
+        finger: '5.12d',
+        static: '5.12b',
+        dynamic: '5.11c',
+        enduranceGrade: '5.12a',
+        enduranceRoutes: '5',
+        mentalGrade: '5.12d',
+        mentalAttempts: '12'
+      },
+      french: {
+        technical: '7b',
+        finger: '7c',
+        static: '7b',
+        dynamic: '6c+',
+        enduranceGrade: '7a+',
+        enduranceRoutes: '5',
+        mentalGrade: '7c',
+        mentalAttempts: '12'
+      }
+    };
+
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const CONFIG = {
+      chartColors: {
+        fill: 'rgba(0, 206, 209, 0.25)',
+        border: '#00CED1',
+        point: '#FF69B4',
+        pointBorder: '#FF69B4',
+        grid: 'rgba(0, 200, 83, 0.2)',
+        angleLines: 'rgba(0, 200, 83, 0.15)',
+        tickLabels: '#606080'
+      },
+      exportWidth: 1080,
+      exportHeight: 1350,
+      aspects: [
+        { key: 'technical', label: 'Technical', fullLabel: 'Technical Precision' },
+        { key: 'finger', label: 'Finger', fullLabel: 'Finger Strength' },
+        { key: 'static', label: 'Static', fullLabel: 'Static Power' },
+        { key: 'dynamic', label: 'Dynamic', fullLabel: 'Coordination & Dynamic' },
+        { key: 'endurance', label: 'Endurance', fullLabel: 'Endurance' },
+        { key: 'mental', label: 'Mental', fullLabel: 'Mental & Redpoint' }
+      ],
+      gradeDropdowns: ['technical', 'finger', 'static', 'dynamic', 'enduranceGrade', 'mentalGrade']
+    };
+
+    // ============================================
+    // GRADE SYSTEM MANAGEMENT
+    // ============================================
+    function getCurrentGradeSystem() {
+      return document.getElementById('gradeSystem').value;
+    }
+
+    function getGradesForCurrentSystem() {
+      const system = getCurrentGradeSystem();
+      return GRADE_SYSTEMS[system].grades;
+    }
+
+    function populateGradeDropdowns() {
+      const grades = getGradesForCurrentSystem();
+      
+      CONFIG.gradeDropdowns.forEach(dropdownId => {
+        const dropdown = document.getElementById(dropdownId);
+        const currentValue = dropdown.value;
+        
+        // Clear existing options except the first (placeholder)
+        dropdown.innerHTML = '<option value="">— Select grade —</option>';
+        
+        // Add grade options
+        grades.forEach(grade => {
+          const option = document.createElement('option');
+          option.value = grade.display;
+          option.textContent = grade.display;
+          dropdown.appendChild(option);
+        });
+        
+        // Try to restore previous value if it exists in new system
+        if (currentValue && grades.some(g => g.display === currentValue)) {
+          dropdown.value = currentValue;
+        }
+      });
+    }
+
+    function clearAllSelections() {
+      CONFIG.gradeDropdowns.forEach(dropdownId => {
+        document.getElementById(dropdownId).value = '';
+      });
+      document.getElementById('enduranceRoutes').value = '';
+      document.getElementById('mentalAttempts').value = '';
+    }
+
+    function onGradeSystemChange() {
+      clearAllSelections();
+      populateGradeDropdowns();
+      updateChart();
+    }
+
+    // ============================================
+    // GRADE VALUE LOOKUP
+    // ============================================
+    function getNumericValue(displayGrade) {
+      if (!displayGrade) return null;
+      
+      const system = getCurrentGradeSystem();
+      const grades = GRADE_SYSTEMS[system].grades;
+      const grade = grades.find(g => g.display === displayGrade);
+      return grade ? grade.numeric : null;
+    }
+
+    // Convert numeric value to grade display string for axis labels
+    function getGradeDisplayForNumeric(numericValue) {
+      if (numericValue === null || numericValue === undefined) return '';
+      
+      const system = getCurrentGradeSystem();
+      const grades = GRADE_SYSTEMS[system].grades;
+      
+      // Find the closest grade (within 0.13 tolerance)
+      let closest = grades.reduce((prev, curr) => 
+        Math.abs(curr.numeric - numericValue) < Math.abs(prev.numeric - numericValue) ? curr : prev
+      );
+      
+      return Math.abs(closest.numeric - numericValue) <= 0.13 ? closest.display : '';
+    }
+
+    // ============================================
+    // DATA MANAGEMENT
+    // ============================================
+    function getFormData() {
+      const data = {
+        technical: { raw: document.getElementById('technical').value },
+        finger: { raw: document.getElementById('finger').value },
+        static: { raw: document.getElementById('static').value },
+        dynamic: { raw: document.getElementById('dynamic').value },
+        endurance: { 
+          gradeRaw: document.getElementById('enduranceGrade').value,
+          routes: document.getElementById('enduranceRoutes').value
+        },
+        mental: {
+          gradeRaw: document.getElementById('mentalGrade').value,
+          attempts: document.getElementById('mentalAttempts').value
+        }
+      };
+
+      // Parse simple grades
+      ['technical', 'finger', 'static', 'dynamic'].forEach(key => {
+        data[key].value = getNumericValue(data[key].raw);
+        data[key].display = data[key].raw || '—';
+      });
+
+      // Parse endurance (grade only, routes for display context)
+      const enduranceGradeValue = getNumericValue(data.endurance.gradeRaw);
+      const enduranceRoutes = parseInt(data.endurance.routes) || 0;
+      if (enduranceGradeValue !== null) {
+        data.endurance.value = enduranceGradeValue;
+        data.endurance.display = enduranceRoutes > 0 
+          ? `${data.endurance.gradeRaw} × ${enduranceRoutes}`
+          : data.endurance.gradeRaw;
+      } else {
+        data.endurance.value = null;
+        data.endurance.display = '—';
+      }
+
+      // Parse mental (grade only, attempts for display)
+      const mentalGradeValue = getNumericValue(data.mental.gradeRaw);
+      const mentalAttempts = parseInt(data.mental.attempts) || 0;
+      if (mentalGradeValue !== null) {
+        data.mental.value = mentalGradeValue;
+        data.mental.display = mentalAttempts > 0 
+          ? `${data.mental.gradeRaw} (${mentalAttempts})`
+          : data.mental.gradeRaw;
+      } else {
+        data.mental.value = null;
+        data.mental.display = '—';
+      }
+
+      return data;
+    }
+
+    // ============================================
+    // CHART MANAGEMENT
+    // ============================================
+    // Register the datalabels plugin
+    Chart.register(ChartDataLabels);
+    
+    let radarChart = null;
+    let currentDisplayLabels = ['—', '—', '—', '—', '—', '—']; // Store display labels for chart
+
+    function getChartMin() {
+      return 10; // Minimum grade starts at 10.0 (V0/4/5.10a/5c)
+    }
+
+    function getChartMax(values) {
+      const validValues = values.filter(v => v !== null && v !== undefined && v > 0);
+      if (validValues.length === 0) return 12; // Default when no data
+      // Return the highest entered grade + 1 for spacing
+      const maxValue = Math.max(...validValues);
+      return Math.ceil(maxValue) + 1;
+    }
+
+    // Find the nearest grade boundary for clean axis display
+    function roundToNearestGrade(value) {
+      const grades = getGradesForCurrentSystem();
+      let closest = grades.reduce((prev, curr) => 
+        Math.abs(curr.numeric - value) < Math.abs(prev.numeric - value) ? curr : prev
+      );
+      return closest.numeric;
+    }
+
+    function createChart() {
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      
+      radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: CONFIG.aspects.map(a => a.label),
+          datasets: [{
+            label: 'Climbing Ability',
+            data: [10, 10, 10, 10, 10, 10],
+            fill: true,
+            backgroundColor: CONFIG.chartColors.fill,
+            borderColor: CONFIG.chartColors.border,
+            borderWidth: 3,
+            pointBackgroundColor: CONFIG.chartColors.point,
+            pointBorderColor: CONFIG.chartColors.pointBorder,
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            datalabels: {
+              color: '#1a1a2e',
+              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+              borderRadius: 4,
+              padding: { top: 2, bottom: 2, left: 4, right: 4 },
+              font: {
+                family: 'Outfit',
+                size: 9,
+                weight: 600
+              },
+              // Smart positioning based on point location on hexagon
+              // Index: 0=Technical(top), 1=Finger(top-right), 2=Static(bottom-right)
+              //        3=Dynamic(bottom), 4=Endurance(bottom-left), 5=Mental(top-left)
+              anchor: 'end',
+              align: function(context) {
+                const alignments = ['top', 'right', 'right', 'bottom', 'left', 'left'];
+                return alignments[context.dataIndex];
+              },
+              offset: 6,
+              formatter: function(value, context) {
+                const label = currentDisplayLabels[context.dataIndex];
+                return label && label !== '—' ? label : '';
+              }
+            }
+          },
+          scales: {
+            r: {
+              min: 10,
+              max: 12,
+              ticks: {
+                stepSize: 0.5,
+                display: false // Hide axis tick labels (grades shown on data points instead)
+              },
+              grid: {
+                color: CONFIG.chartColors.grid,
+                lineWidth: 1
+              },
+              angleLines: {
+                color: CONFIG.chartColors.angleLines,
+                lineWidth: 1
+              },
+              pointLabels: {
+                color: '#404060',
+                font: {
+                  size: 11,
+                  family: 'Outfit',
+                  weight: 600
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateChart() {
+      if (!radarChart) return;
+      
+      const data = getFormData();
+      const values = [
+        data.technical.value,
+        data.finger.value,
+        data.static.value,
+        data.dynamic.value,
+        data.endurance.value,
+        data.mental.value
+      ];
+
+      // Update display labels for the datalabels plugin
+      currentDisplayLabels = [
+        data.technical.display,
+        data.finger.display,
+        data.static.display,
+        data.dynamic.display,
+        data.endurance.display,
+        data.mental.display
+      ];
+
+      // Replace null with minimum (10) for chart display
+      const chartMin = getChartMin();
+      const chartValues = values.map(v => v ?? chartMin);
+      
+      // Calculate dynamic max (highest entered grade)
+      const chartMax = getChartMax(values);
+
+      radarChart.data.datasets[0].data = chartValues;
+      radarChart.options.scales.r.min = chartMin;
+      radarChart.options.scales.r.max = chartMax;
+      // Use 0.5 step size to align with grade intervals
+      radarChart.options.scales.r.ticks.stepSize = 0.5;
+      radarChart.update('none');
+
+      // Update score cards
+      updateScoreCards(data);
+    }
+
+    function updateScoreCards(data) {
+      const container = document.getElementById('scoreCards');
+      container.innerHTML = CONFIG.aspects.map(aspect => {
+        const value = data[aspect.key]?.display || '—';
+        return `
+          <div class="score-card">
+            <div class="score-label">${aspect.label}</div>
+            <div class="score-value">${value}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ============================================
+    // DATE FORMATTING
+    // ============================================
+    function updateDate() {
+      const now = new Date();
+      const options = { month: 'long', year: 'numeric' };
+      document.getElementById('exportDate').textContent = now.toLocaleDateString('en-US', options);
+    }
+
+    // ============================================
+    // EXPORT FUNCTIONS
+    // ============================================
+    async function captureImage() {
+      const container = document.getElementById('exportContainer');
+      
+      // Calculate scale for high resolution
+      const scale = CONFIG.exportWidth / container.offsetWidth;
+      
+      const canvas = await html2canvas(container, {
+        scale: scale,
+        useCORS: true,
+        backgroundColor: '#FFFFFF',
+        logging: false
+      });
+
+      return canvas;
+    }
+
+    async function downloadImage() {
+      const btn = document.getElementById('downloadBtn');
+      const originalContent = btn.innerHTML;
+      
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div><span>Generating...</span>';
+        
+        const canvas = await captureImage();
+        
+        // Create download link
+        const link = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
+        link.download = `climbing-assessment-${date}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        showToast('Image downloaded! 🎉', 'success');
+      } catch (error) {
+        console.error('Download error:', error);
+        showToast('Failed to generate image', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+      }
+    }
+
+    async function copyToClipboard() {
+      const btn = document.getElementById('copyBtn');
+      const originalContent = btn.innerHTML;
+      
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div><span>Copying...</span>';
+        
+        const canvas = await captureImage();
+        
+        // Convert to blob and copy
+        canvas.toBlob(async (blob) => {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            showToast('Copied to clipboard! 📋', 'success');
+          } catch (err) {
+            // Fallback for browsers that don't support clipboard API
+            showToast('Copy not supported in this browser. Try download instead.', 'error');
+          }
+          btn.disabled = false;
+          btn.innerHTML = originalContent;
+        }, 'image/png');
+      } catch (error) {
+        console.error('Copy error:', error);
+        showToast('Failed to copy image', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+      }
+    }
+
+    // ============================================
+    // TOAST NOTIFICATIONS
+    // ============================================
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} visible`;
+      
+      setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 3000);
+    }
+
+    // ============================================
+    // FORM ACTIONS
+    // ============================================
+    function loadDemoData() {
+      const system = getCurrentGradeSystem();
+      const demoData = DEMO_DATA[system];
+      
+      // Set grade dropdowns
+      document.getElementById('technical').value = demoData.technical;
+      document.getElementById('finger').value = demoData.finger;
+      document.getElementById('static').value = demoData.static;
+      document.getElementById('dynamic').value = demoData.dynamic;
+      document.getElementById('enduranceGrade').value = demoData.enduranceGrade;
+      document.getElementById('mentalGrade').value = demoData.mentalGrade;
+      
+      // Set numeric inputs
+      document.getElementById('enduranceRoutes').value = demoData.enduranceRoutes;
+      document.getElementById('mentalAttempts').value = demoData.mentalAttempts;
+      
+      updateChart();
+      showToast('Demo data loaded! 📊', 'success');
+    }
+
+    function resetForm() {
+      clearAllSelections();
+      updateChart();
+      showToast('Form cleared! 🔄', 'success');
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    function initEventListeners() {
+      // Grade system selector
+      document.getElementById('gradeSystem').addEventListener('change', onGradeSystemChange);
+      
+      // Grade dropdowns - update chart on change
+      CONFIG.gradeDropdowns.forEach(dropdownId => {
+        document.getElementById(dropdownId).addEventListener('change', updateChart);
+      });
+      
+      // Numeric inputs - update chart on input
+      document.getElementById('enduranceRoutes').addEventListener('input', updateChart);
+      document.getElementById('mentalAttempts').addEventListener('input', updateChart);
+
+      // Buttons
+      document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+      document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+      document.getElementById('demoBtn').addEventListener('click', loadDemoData);
+      document.getElementById('resetBtn').addEventListener('click', resetForm);
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    function init() {
+      updateDate();
+      populateGradeDropdowns();
+      createChart();
+      updateChart();
+      initEventListeners();
+    }
+
+    // Start the app when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
