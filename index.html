@@ -626,7 +626,7 @@
           </div>
         </div>
 
-        <div class="action-buttons">
+        <div class="action-buttons" id="desktopActions">
           <button class="btn btn-primary btn-block" id="downloadBtn">
             <span>📸</span>
             <span>Download for Instagram</span>
@@ -634,6 +634,12 @@
           <button class="btn btn-secondary btn-block" id="copyBtn">
             <span>📋</span>
             <span>Copy to Clipboard</span>
+          </button>
+        </div>
+        <div class="action-buttons" id="mobileActions" style="display: none;">
+          <button class="btn btn-primary btn-block" id="shareBtn">
+            <span>📤</span>
+            <span>Share / Save to Photos</span>
           </button>
         </div>
       </div>
@@ -1143,6 +1149,18 @@
     }
 
     // ============================================
+    // MOBILE DETECTION
+    // ============================================
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+             (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+    }
+
+    function canUseWebShare() {
+      return navigator.share && navigator.canShare;
+    }
+
+    // ============================================
     // EXPORT FUNCTIONS
     // ============================================
     async function captureImage() {
@@ -1220,6 +1238,45 @@
       }
     }
 
+    async function shareImage() {
+      const btn = document.getElementById('shareBtn');
+      const originalContent = btn.innerHTML;
+      
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div><span>Preparing...</span>';
+        
+        const canvas = await captureImage();
+        
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const date = new Date().toISOString().split('T')[0];
+        const file = new File([blob], `goat-metrics-${date}.png`, { type: 'image/png' });
+        
+        // Check if we can share this file
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'G.O.A.T. Metrics',
+            text: 'Check out my climbing assessment!'
+          });
+          showToast('Shared successfully! 🎉', 'success');
+        } else {
+          // Fallback: try to share without file (just URL/text)
+          showToast('File sharing not supported. Try on mobile.', 'error');
+        }
+      } catch (error) {
+        // User cancelled or share failed
+        if (error.name !== 'AbortError') {
+          console.error('Share error:', error);
+          showToast('Share cancelled or failed', 'error');
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+      }
+    }
+
     // ============================================
     // TOAST NOTIFICATIONS
     // ============================================
@@ -1278,11 +1335,37 @@
       document.getElementById('enduranceRoutes').addEventListener('input', updateChart);
       document.getElementById('mentalAttempts').addEventListener('input', updateChart);
 
-      // Buttons
+      // Desktop buttons
       document.getElementById('downloadBtn').addEventListener('click', downloadImage);
       document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+      
+      // Mobile button
+      document.getElementById('shareBtn').addEventListener('click', shareImage);
+      
+      // Common buttons
       document.getElementById('demoBtn').addEventListener('click', loadDemoData);
       document.getElementById('resetBtn').addEventListener('click', resetForm);
+    }
+
+    // ============================================
+    // PLATFORM-SPECIFIC UI
+    // ============================================
+    function setupPlatformUI() {
+      const isMobile = isMobileDevice();
+      const canShare = canUseWebShare();
+      
+      const desktopActions = document.getElementById('desktopActions');
+      const mobileActions = document.getElementById('mobileActions');
+      
+      if (isMobile && canShare) {
+        // Mobile with Web Share API support: show Share button
+        desktopActions.style.display = 'none';
+        mobileActions.style.display = 'flex';
+      } else {
+        // Desktop or no Web Share support: show Download + Copy
+        desktopActions.style.display = 'flex';
+        mobileActions.style.display = 'none';
+      }
     }
 
     // ============================================
@@ -1294,6 +1377,7 @@
       createChart();
       updateChart();
       initEventListeners();
+      setupPlatformUI();
     }
 
     // Start the app when DOM is ready
